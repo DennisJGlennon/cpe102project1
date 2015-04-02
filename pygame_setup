@@ -1,5 +1,0 @@
-#!/bin/sh
-
-touch ${HOME}/.mybashrc
-echo 'export PYTHONPATH=/home/akeen/public/pygame2/lib`getconf LONG_BIT`/python' >> ${HOME}/.mybashrc
-
