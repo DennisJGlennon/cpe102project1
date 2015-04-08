@@ -41,7 +41,7 @@ class WorldView:
    def draw_background(self):
       for y in range(0, self.viewport.height):
          for x in range(0, self.viewport.width):
-            w_pt = viewport_to_world(self.viewport, point.Point(x, y))
+            w_pt = self.viewport_to_world(point.Point(x, y))
             img = self.world.get_background_image(w_pt)
             self.screen.blit(img, (x * self.tile_width, y * self.tile_height))
 
@@ -49,34 +49,34 @@ class WorldView:
    def draw_entities(self):
       for entity in self.world.entities:
          if self.viewport.collidepoint(entity.position.x, entity.position.y):
-            v_pt = world_to_viewport(self.viewport, entity.position)
+            v_pt = self.world_to_viewport(entity.position)
             self.screen.blit(entity.get_image(),
                (v_pt.x * self.tile_width, v_pt.y * self.tile_height))
 
 
    def draw_viewport(self):
-      draw_background()
-      draw_entities()
+      self.draw_background()
+      self.draw_entities()
 
 
    def update_view(self, view_delta=(0,0), mouse_img=None):
-      self.viewport = create_shifted_viewport(self.viewport, view_delta,
+      self.viewport = self.create_shifted_viewport(view_delta,
          self.num_rows, self.num_cols)
       self.mouse_img = mouse_img
-      draw_viewport()
+      self.draw_viewport()
       pygame.display.update()
-      mouse_move(self.mouse_pt)
+      self.mouse_move(self.mouse_pt)
 
 
    def update_view_tiles(self, tiles):
       rects = []
       for tile in tiles:
          if self.viewport.collidepoint(tile.x, tile.y):
-            v_pt = world_to_viewport(self.viewport, tile)
-            img = get_tile_image(v_pt)
-            rects.append(update_tile(v_pt, img))
+            v_pt = self.world_to_viewport(tile)
+            img = self.get_tile_image(v_pt)
+            rects.append(self.update_tile(v_pt, img))
             if self.mouse_pt.x == v_pt.x and self.mouse_pt.y == v_pt.y:
-               rects.append(update_mouse_cursor())
+               rects.append(self.update_mouse_cursor())
 
       pygame.display.update(rects)
 
@@ -91,7 +91,7 @@ class WorldView:
 
 
    def get_tile_image(self, view_tile_pt):
-      pt = viewport_to_world(self.viewport, view_tile_pt)
+      pt = self.viewport_to_world(view_tile_pt)
       bgnd = self.world.get_background_image(pt)
       occupant = self.world.get_tile_occupant(pt)
       if occupant:
@@ -116,24 +116,23 @@ class WorldView:
       return surface
 
 
-   def update_mouse_cursor(view):
-      return update_tile(self.mouse_pt,
-         create_mouse_surface(
-            self.world.is_occupied(viewport_to_world(self.viewport, 
-               self.mouse_pt))))
+   def update_mouse_cursor(self):
+      return self.update_tile(self.mouse_pt,
+         self.create_mouse_surface(
+            self.world.is_occupied(self.viewport_to_world(self.mouse_pt))))
 
 
    def mouse_move(self, new_mouse_pt):
       rects = []
 
-      rects.append(update_tile(self.mouse_pt,
-         get_tile_image(self.mouse_pt)))
+      rects.append(self.update_tile(self.mouse_pt,
+         self.get_tile_image(self.mouse_pt)))
 
       if self.viewport.collidepoint(new_mouse_pt.x + self.viewport.left,
          new_mouse_pt.y + self.viewport.top):
          self.mouse_pt = new_mouse_pt
 
-      rects.append(update_mouse_cursor())
+      rects.append(self.update_mouse_cursor())
 
       pygame.display.update(rects)
 
