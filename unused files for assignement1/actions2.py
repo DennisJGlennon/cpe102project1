@@ -24,7 +24,6 @@ VEIN_RATE_MAX = 17000
 
 
 def sign(x):
-#determines sign of x
    if x < 0:
       return -1
    elif x > 0:
@@ -34,87 +33,69 @@ def sign(x):
 
 
 def adjacent(pt1, pt2):
-#determines if point 1 and point 2 are adjacent
    return ((pt1.x == pt2.x and abs(pt1.y - pt2.y) == 1) or
       (pt1.y == pt2.y and abs(pt1.x - pt2.x) == 1))
 
 
 def next_position(world, entity_pt, dest_pt):
-   '''
-   changes current entity point to destination point
-   -normal movement for "normal" object
-   checks if worldmodel of dest point is occupied
-   '''
    horiz = sign(dest_pt.x - entity_pt.x)
    new_pt = point.Point(entity_pt.x + horiz, entity_pt.y)
 
-   if horiz == 0 or world.is_occupied(new_pt):
+   if horiz == 0 or worldmodel.is_occupied(world, new_pt):
       vert = sign(dest_pt.y - entity_pt.y)
       new_pt = point.Point(entity_pt.x, entity_pt.y + vert)
 
-      if vert == 0 or world.is_occupied(new_pt):
+      if vert == 0 or worldmodel.is_occupied(world, new_pt):
          new_pt = point.Point(entity_pt.x, entity_pt.y)
 
    return new_pt
 
-'''
-blob movement (see next_position)
-'''
+
 def blob_next_position(world, entity_pt, dest_pt):
    horiz = sign(dest_pt.x - entity_pt.x)
    new_pt = point.Point(entity_pt.x + horiz, entity_pt.y)
 
-   if horiz == 0 or (world.is_occupied(new_pt) and
-      not isinstance(world.get_tile_occupant(new_pt),
+   if horiz == 0 or (worldmodel.is_occupied(world, new_pt) and
+      not isinstance(worldmodel.get_tile_occupant(world, new_pt),
       entities.Ore)):
       vert = sign(dest_pt.y - entity_pt.y)
       new_pt = point.Point(entity_pt.x, entity_pt.y + vert)
 
-      if vert == 0 or (world.is_occupied(new_pt) and
-         not isinstance(world.get_tile_occupant(new_pt),
+      if vert == 0 or (worldmodel.is_occupied(world, new_pt) and
+         not isinstance(worldmodel.get_tile_occupant(world, new_pt),
          entities.Ore)):
          new_pt = point.Point(entity_pt.x, entity_pt.y)
 
    return new_pt
 
-'''
-if in miner is in ore state
-check if miner is at ore, if not continue movement
-if so, delete a "health point" of the ore
-'''
+
 def miner_to_ore(world, entity, ore):
    entity_pt = entity.get_position()
    if not ore:
       return ([entity_pt], False)
    ore_pt = ore.get_position()
    if adjacent(entity_pt, ore_pt):
-      entity.set_resource_count(
-         1 + entity.get_resource_count())
+      entity.set_resource_count(1 + entity.get_resource_count())
       remove_entity(world, ore)
       return ([ore_pt], True)
    else:
       new_pt = next_position(world, entity_pt, ore_pt)
-      return (world.move_entity(entity, new_pt), False)
+      return (worldmodel.move_entity(world, entity, new_pt), False)
 
-'''
-if miner is in smith state
-check if miner is at smith, if not continue moving
-if so increase resource count
-'''
+
 def miner_to_smith(world, entity, smith):
    entity_pt = entity.get_position()
    if not smith:
       return ([entity_pt], False)
    smith_pt = smith.get_position()
    if adjacent(entity_pt, smith_pt):
-      smith.set_resource_count(
-         smith.get_resource_count() +
+      smith.set_resource_count(smith.get_resource_count() +
          entity.get_resource_count())
       entity.set_resource_count(0)
       return ([], True)
    else:
       new_pt = next_position(world, entity_pt, smith_pt)
-      return (world.move_entity(entity, new_pt), False)
+      return (worldmodel.move_entity(world, entity, new_pt), False)
 
 
 def create_miner_not_full_action(world, entity, i_store):
@@ -122,7 +103,7 @@ def create_miner_not_full_action(world, entity, i_store):
       entity.remove_pending_action(action)
 
       entity_pt = entity.get_position()
-      ore = world.find_nearest(entity_pt, entities.Ore)
+      ore = worldmodel.find_nearest(world, entity_pt, entities.Ore)
       (tiles, found) = miner_to_ore(world, entity, ore)
 
       new_entity = entity
@@ -142,7 +123,7 @@ def create_miner_full_action(world, entity, i_store):
       entity.remove_pending_action(action)
 
       entity_pt = entity.get_position()
-      smith = world.find_nearest(entity_pt, entities.Blacksmith)
+      smith = worldmodel.find_nearest(world, entity_pt, entities.Blacksmith)
       (tiles, found) = miner_to_smith(world, entity, smith)
 
       new_entity = entity
@@ -167,10 +148,10 @@ def blob_to_vein(world, entity, vein):
       return ([vein_pt], True)
    else:
       new_pt = blob_next_position(world, entity_pt, vein_pt)
-      old_entity = world.get_tile_occupant(new_pt)
+      old_entity = worldmodel.get_tile_occupant(world, new_pt)
       if isinstance(old_entity, entities.Ore):
          remove_entity(world, old_entity)
-      return (world.move_entity(entity, new_pt), False)
+      return (worldmodel.move_entity(world, entity, new_pt), False)
 
 
 def create_ore_blob_action(world, entity, i_store):
@@ -178,13 +159,13 @@ def create_ore_blob_action(world, entity, i_store):
       entity.remove_pending_action(action)
 
       entity_pt = entity.get_position()
-      vein = world.find_nearest(entity_pt, entities.Vein)
+      vein = worldmodel.find_nearest(world, entity_pt, entities.Vein)
       (tiles, found) = blob_to_vein(world, entity, vein)
 
       next_time = current_ticks + entity.get_rate()
       if found:
          quake = create_quake(world, tiles[0], current_ticks, i_store)
-         world.add_entity(quake)
+         worldmodel.add_entity(world, quake)
          next_time = current_ticks + entity.get_rate() * 2
 
       schedule_action(world, entity,
@@ -200,8 +181,8 @@ def find_open_around(world, pt, distance):
       for dx in range(-distance, distance + 1):
          new_pt = point.Point(pt.x + dx, pt.y + dy)
 
-         if (world.within_bounds(new_pt) and
-            (not world.is_occupied(new_pt))):
+         if (worldmodel.within_bounds(world, new_pt) and
+            (not worldmodel.is_occupied(world, new_pt))):
             return new_pt
 
    return None
@@ -217,7 +198,7 @@ def create_vein_action(world, entity, i_store):
          ore = create_ore(world,
             "ore - " + entity.get_name() + " - " + str(current_ticks),
             open_pt, current_ticks, i_store)
-         world.add_entity(ore)
+         worldmodel.add_entity(world, ore)
          tiles = [open_pt]
       else:
          tiles = []
@@ -253,8 +234,8 @@ def try_transform_miner(world, entity, transform):
    new_entity = transform(world, entity)
    if entity != new_entity:
       clear_pending_actions(world, entity)
-      world.remove_entity_at(entity.get_position())
-      world.add_entity(new_entity)
+      worldmodel.remove_entity_at(world, entity.get_position())
+      worldmodel.add_entity(world, new_entity)
       schedule_animation(world, new_entity)
 
    return new_entity
@@ -300,7 +281,7 @@ def create_ore_transform_action(world, entity, i_store):
          current_ticks, i_store)
 
       remove_entity(world, entity)
-      world.add_entity(blob)
+      worldmodel.add_entity(world, blob)
 
       return [blob.get_position()]
    return action
@@ -308,9 +289,9 @@ def create_ore_transform_action(world, entity, i_store):
 
 def remove_entity(world, entity):
    for action in entity.get_pending_actions():
-      world.unschedule_action(action)
+      worldmodel.unschedule_action(world, action)
    entity.clear_pending_actions()
-   world.remove_entity(entity)
+   worldmodel.remove_entity(world, entity)
 
 
 def create_blob(world, name, pt, rate, ticks, i_store):
@@ -353,7 +334,7 @@ def create_quake(world, pt, ticks, i_store):
       image_store.get_images(i_store, 'quake'), QUAKE_ANIMATION_RATE)
    schedule_quake(world, quake, ticks)
    return quake
-   
+
 
 def schedule_quake(world, quake, ticks):
    schedule_animation(world, quake, QUAKE_STEPS) 
@@ -364,7 +345,7 @@ def schedule_quake(world, quake, ticks):
 def create_vein(world, name, pt, ticks, i_store):
    vein = entities.Vein("vein" + name,
       random.randint(VEIN_RATE_MIN, VEIN_RATE_MAX),
-      pt, i_store.get_images('vein'))
+      pt, image_store.get_images(i_store, 'vein'))
    return vein
 
 
@@ -375,7 +356,7 @@ def schedule_vein(world, vein, ticks, i_store):
 
 def schedule_action(world, entity, action, time):
    entity.add_pending_action(action)
-   world.schedule_action(action, time)
+   worldmodel.schedule_action(world, action, time)
 
 
 def schedule_animation(world, entity, repeat_count=0):
@@ -386,5 +367,6 @@ def schedule_animation(world, entity, repeat_count=0):
 
 def clear_pending_actions(world, entity):
    for action in entity.get_pending_actions():
-      world.unschedule_action(action)
+      worldmodel.unschedule_action(world, action)
    entity.clear_pending_actions()
+

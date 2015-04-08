@@ -50,7 +50,7 @@ def main():
 
    load_world(world, i_store, WORLD_FILE)
 
-   view.update_view()
+   worldview.update_view(view)
 
    controller.activity_loop(view, world)
 

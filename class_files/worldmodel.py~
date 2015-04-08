@@ -14,15 +14,13 @@ class WorldModel:
       self.entities = []
       self.action_queue = ordered_list.OrderedList()
 
+   def within_bounds(self, pt):
+      return (pt.x >= 0 and pt.x < self.num_cols and
+         pt.y >= 0 and pt.y < self.num_rows)
 
-def within_bounds(world, pt):
-   return (pt.x >= 0 and pt.x < world.num_cols and
-      pt.y >= 0 and pt.y < world.num_rows)
-
-
-def is_occupied(world, pt):
-   return (within_bounds(world, pt) and
-      world.occupancy.get_cell(pt) != None)
+   def is_occupied(self, pt):
+      return (self.within_bounds(pt) and
+         self.occupancy.get_cell(pt) != None)
 
 
 def nearest_entity(entity_dists):
@@ -51,7 +49,7 @@ def find_nearest(world, pt, type):
 
 def add_entity(world, entity):
    pt = entities.get_position(entity)
-   if within_bounds(world, pt):
+   if world.within_bounds(pt):
       old_entity = world.occupancy.get_cell(pt)
       if old_entity != None:
          entities.clear_pending_actions(old_entity)
@@ -61,7 +59,7 @@ def add_entity(world, entity):
 
 def move_entity(world, entity, pt):
    tiles = []
-   if within_bounds(world, pt):
+   if world.within_bounds(pt):
       old_pt = entities.get_position(entity)
       world.occupancy.set_cell(old_pt, None)
       tiles.append(old_pt)
@@ -77,7 +75,7 @@ def remove_entity(world, entity):
 
 
 def remove_entity_at(world, pt):
-   if (within_bounds(world, pt) and
+   if (world.within_bounds(pt) and
       world.occupancy.get_cell(pt) != None):
       entity = world.occupancy.get_cell(pt)
       entities.set_position(entity, point.Point(-1, -1))
@@ -106,22 +104,22 @@ def update_on_time(world, ticks):
 
 
 def get_background_image(world, pt):
-   if within_bounds(world, pt):
+   if world.within_bounds(pt):
       return entities.get_image(world.background.get_cell(pt))
 
 
 def get_background(world, pt):
-   if within_bounds(world, pt):
+   if world.within_bounds(pt):
       return world.background.get_cell(pt)
 
 
 def set_background(world, pt, bgnd):
-   if within_bounds(world, pt):
+   if world.within_bounds(pt):
       world.background.set_cell(pt, bgnd)
 
 
 def get_tile_occupant(world, pt):
-   if within_bounds(world, pt):
+   if world.within_bounds(pt):
       return world.occupancy.get_cell(pt)
 
 

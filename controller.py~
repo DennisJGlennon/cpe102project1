@@ -30,7 +30,7 @@ def handle_timer_event(world, view):
 
 def handle_mouse_motion(view, event):
    mouse_pt = mouse_to_tile(event.pos, view.tile_width, view.tile_height)
-   view.mouse_move(mouse_pt)
+   worldview.mouse_move(view, mouse_pt)
 
 
 def handle_keydown(view, event):
