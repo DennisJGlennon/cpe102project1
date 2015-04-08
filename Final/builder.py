@@ -19,7 +19,7 @@ TILE_WIDTH = 32
 TILE_HEIGHT = 32
 
 
-def create__default_background(img):
+def create_default_background(img):
    return entities.Background(image_store.DEFAULT_IMAGE_NAME, img)
 
 

@@ -24,7 +24,6 @@ VEIN_RATE_MAX = 17000
 
 
 def sign(x):
-#determines sign of x
    if x < 0:
       return -1
    elif x > 0:
@@ -34,17 +33,11 @@ def sign(x):
 
 
 def adjacent(pt1, pt2):
-#determines if point 1 and point 2 are adjacent
    return ((pt1.x == pt2.x and abs(pt1.y - pt2.y) == 1) or
       (pt1.y == pt2.y and abs(pt1.x - pt2.x) == 1))
 
 
 def next_position(world, entity_pt, dest_pt):
-   '''
-   changes current entity point to destination point
-   -normal movement for "normal" object
-   checks if worldmodel of dest point is occupied
-   '''
    horiz = sign(dest_pt.x - entity_pt.x)
    new_pt = point.Point(entity_pt.x + horiz, entity_pt.y)
 
@@ -57,9 +50,7 @@ def next_position(world, entity_pt, dest_pt):
 
    return new_pt
 
-'''
-blob movement (see next_position)
-'''
+
 def blob_next_position(world, entity_pt, dest_pt):
    horiz = sign(dest_pt.x - entity_pt.x)
    new_pt = point.Point(entity_pt.x + horiz, entity_pt.y)
@@ -77,11 +68,7 @@ def blob_next_position(world, entity_pt, dest_pt):
 
    return new_pt
 
-'''
-if in miner is in ore state
-check if miner is at ore, if not continue movement
-if so, delete a "health point" of the ore
-'''
+
 def miner_to_ore(world, entity, ore):
    entity_pt = entities.get_position(entity)
    if not ore:
@@ -96,11 +83,7 @@ def miner_to_ore(world, entity, ore):
       new_pt = next_position(world, entity_pt, ore_pt)
       return (worldmodel.move_entity(world, entity, new_pt), False)
 
-'''
-if miner is in smith state
-check if miner is at smith, if not continue moving
-if so increase resource count
-'''
+
 def miner_to_smith(world, entity, smith):
    entity_pt = entities.get_position(entity)
    if not smith:

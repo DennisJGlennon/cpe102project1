@@ -1,11 +1,14 @@
-import builder_controller
+import controller
 import entities
 import image_store
 import pygame
 import random
 import save_load
+import sys
 import worldmodel
 import worldview
+
+RUN_AFTER_LOAD = True
 
 IMAGE_LIST_FILE_NAME = 'imagelist'
 WORLD_FILE = 'gaia.sav'
@@ -19,8 +22,13 @@ TILE_WIDTH = 32
 TILE_HEIGHT = 32
 
 
-def create__default_background(img):
+def create_default_background(img):
    return entities.Background(image_store.DEFAULT_IMAGE_NAME, img)
+
+
+def load_world(world, i_store, filename):
+   with open(filename, 'r') as file:
+      save_load.load_world(world, i_store, file, RUN_AFTER_LOAD)
 
 
 def main():
@@ -40,9 +48,11 @@ def main():
    view = worldview.WorldView(SCREEN_WIDTH // TILE_WIDTH,
       SCREEN_HEIGHT // TILE_HEIGHT, screen, world, TILE_WIDTH, TILE_HEIGHT)
 
+   load_world(world, i_store, WORLD_FILE)
+
    worldview.update_view(view)
 
-   builder_controller.activity_loop(view, world, i_store)
+   controller.activity_loop(view, world)
 
 
 if __name__ == '__main__':
