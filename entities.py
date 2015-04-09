@@ -1,4 +1,5 @@
 import point
+from actions import *
 
 class Background:
    def __init__(self, name, imgs):
@@ -92,6 +93,35 @@ class MinerNotFull:
          str(self.rate), str(self.animation_rate)])
 
 
+   def next_position(self, world, dest_pt): #both miners
+		entity_pt = self.get_position()
+		horiz = sign(dest_pt.x - entity_pt.x)
+		new_pt = point.Point(entity_pt.x + horiz, entity_pt.y)
+
+		if horiz == 0 or world.is_occupied(new_pt):
+		   vert = sign(dest_pt.y - entity_pt.y)
+		   new_pt = point.Point(entity_pt.x, entity_pt.y + vert)
+
+		   if vert == 0 or world.is_occupied(new_pt):
+		      new_pt = point.Point(entity_pt.x, entity_pt.y)
+
+		return new_pt
+
+   def miner_to_ore(self, world, ore): #miner not
+		entity_pt = self.get_position()
+		if not ore:
+		   return ([entity_pt], False)
+		ore_pt = ore.get_position()
+		if adjacent(entity_pt, ore_pt):
+		   self.set_resource_count(
+		      1 + self.get_resource_count())
+		   remove_entity(world, ore)
+		   return ([ore_pt], True)
+		else:
+		   new_pt = self.next_position(world, ore_pt)
+		   return (world.move_entity(self, new_pt), False)
+
+
 class MinerFull:
    def __init__(self, name, resource_limit, position, rate, imgs,
       animation_rate):
@@ -158,6 +188,36 @@ class MinerFull:
 
    def entity_string(self):
       return 'unknown'
+
+   def next_position(self, world, dest_pt): #both miners
+		entity_pt = self.get_position()
+		horiz = sign(dest_pt.x - entity_pt.x)
+		new_pt = point.Point(entity_pt.x + horiz, entity_pt.y)
+
+		if horiz == 0 or world.is_occupied(new_pt):
+		   vert = sign(dest_pt.y - entity_pt.y)
+		   new_pt = point.Point(entity_pt.x, entity_pt.y + vert)
+
+		   if vert == 0 or world.is_occupied(new_pt):
+		      new_pt = point.Point(entity_pt.x, entity_pt.y)
+
+		return new_pt
+
+
+   def miner_to_smith(self, world, smith):
+		entity_pt = self.get_position()
+		if not smith:
+		   return ([entity_pt], False)
+		smith_pt = smith.get_position()
+		if adjacent(entity_pt, smith_pt):
+		   smith.set_resource_count(
+		      smith.get_resource_count() +
+		      self.get_resource_count())
+		   self.set_resource_count(0)
+		   return ([], True)
+		else:
+		   new_pt = self.next_position(world, smith_pt)
+		   return (world.move_entity(self, new_pt), False)
 
 
 class Vein:

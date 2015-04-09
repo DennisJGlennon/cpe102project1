@@ -23,8 +23,7 @@ VEIN_RATE_MIN = 8000
 VEIN_RATE_MAX = 17000
 
 
-def sign(x):
-#determines sign of x
+def sign(x): #no class
    if x < 0:
       return -1
    elif x > 0:
@@ -33,34 +32,13 @@ def sign(x):
       return 0
 
 
-def adjacent(pt1, pt2):
-#determines if point 1 and point 2 are adjacent
+def adjacent(pt1, pt2): #put in point class
    return ((pt1.x == pt2.x and abs(pt1.y - pt2.y) == 1) or
       (pt1.y == pt2.y and abs(pt1.x - pt2.x) == 1))
 
 
-def next_position(world, entity_pt, dest_pt):
-   '''
-   changes current entity point to destination point
-   -normal movement for "normal" object
-   checks if worldmodel of dest point is occupied
-   '''
-   horiz = sign(dest_pt.x - entity_pt.x)
-   new_pt = point.Point(entity_pt.x + horiz, entity_pt.y)
 
-   if horiz == 0 or world.is_occupied(new_pt):
-      vert = sign(dest_pt.y - entity_pt.y)
-      new_pt = point.Point(entity_pt.x, entity_pt.y + vert)
-
-      if vert == 0 or world.is_occupied(new_pt):
-         new_pt = point.Point(entity_pt.x, entity_pt.y)
-
-   return new_pt
-
-'''
-blob movement (see next_position)
-'''
-def blob_next_position(world, entity_pt, dest_pt):
+def blob_next_position(world, entity_pt, dest_pt): #blob
    horiz = sign(dest_pt.x - entity_pt.x)
    new_pt = point.Point(entity_pt.x + horiz, entity_pt.y)
 
@@ -77,44 +55,7 @@ def blob_next_position(world, entity_pt, dest_pt):
 
    return new_pt
 
-'''
-if in miner is in ore state
-check if miner is at ore, if not continue movement
-if so, delete a "health point" of the ore
-'''
-def miner_to_ore(world, entity, ore):
-   entity_pt = entity.get_position()
-   if not ore:
-      return ([entity_pt], False)
-   ore_pt = ore.get_position()
-   if adjacent(entity_pt, ore_pt):
-      entity.set_resource_count(
-         1 + entity.get_resource_count())
-      remove_entity(world, ore)
-      return ([ore_pt], True)
-   else:
-      new_pt = next_position(world, entity_pt, ore_pt)
-      return (world.move_entity(entity, new_pt), False)
 
-'''
-if miner is in smith state
-check if miner is at smith, if not continue moving
-if so increase resource count
-'''
-def miner_to_smith(world, entity, smith):
-   entity_pt = entity.get_position()
-   if not smith:
-      return ([entity_pt], False)
-   smith_pt = smith.get_position()
-   if adjacent(entity_pt, smith_pt):
-      smith.set_resource_count(
-         smith.get_resource_count() +
-         entity.get_resource_count())
-      entity.set_resource_count(0)
-      return ([], True)
-   else:
-      new_pt = next_position(world, entity_pt, smith_pt)
-      return (world.move_entity(entity, new_pt), False)
 
 
 def create_miner_not_full_action(world, entity, i_store):
@@ -123,7 +64,7 @@ def create_miner_not_full_action(world, entity, i_store):
 
       entity_pt = entity.get_position()
       ore = world.find_nearest(entity_pt, entities.Ore)
-      (tiles, found) = miner_to_ore(world, entity, ore)
+      (tiles, found) = entity.miner_to_ore(world, ore)
 
       new_entity = entity
       if found:
@@ -143,7 +84,7 @@ def create_miner_full_action(world, entity, i_store):
 
       entity_pt = entity.get_position()
       smith = world.find_nearest(entity_pt, entities.Blacksmith)
-      (tiles, found) = miner_to_smith(world, entity, smith)
+      (tiles, found) = entity.miner_to_smith(world, smith)
 
       new_entity = entity
       if found:
