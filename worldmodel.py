@@ -154,7 +154,7 @@ class WorldModel:
 
 
 
-   def create_ore1(self, name, pt, ticks, i_store):
+   def create_ore(self, name, pt, ticks, i_store):
       ore = entities.Ore(name, pt, image_store.get_images(i_store, 'ore'),
          random.randint(ORE_CORRUPT_MIN, ORE_CORRUPT_MAX))
       ore.schedule_ore(self, ticks, i_store)
@@ -175,6 +175,10 @@ class WorldModel:
          pt, i_store.get_images('vein'))
       return vein
 
-		
+
+   def clear_pending_actions(self, entity):
+      for action in entity.get_pending_actions():
+         self.unschedule_action(action)
+      entity.clear_pending_actions()
 		
 		

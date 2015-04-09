@@ -37,48 +37,5 @@ def adjacent(pt1, pt2): #put in point class
       (pt1.y == pt2.y and abs(pt1.x - pt2.x) == 1))
 
 
-def create_animation_action(world, entity, repeat_count):
-   def action(current_ticks):
-      entity.remove_pending_action(action)
-
-      entity.next_image()
-
-      if repeat_count != 1:
-         schedule_action(world, entity,
-            create_animation_action(world, entity, max(repeat_count - 1, 0)),
-            current_ticks + entity.get_animation_rate())
-
-      return [entity.get_position()]
-   return action
 
 
-def create_entity_death_action(world, entity):
-   def action(current_ticks):
-      entity.remove_pending_action(action)
-      pt = entity.get_position()
-      remove_entity(world, entity)
-      return [pt]
-   return action
-
-def remove_entity(world, entity):
-   for action in entity.get_pending_actions():
-      world.unschedule_action(action)
-   entity.clear_pending_actions()
-   world.remove_entity(entity)
-
-
-def schedule_action(world, entity, action, time):
-   entity.add_pending_action(action)
-   world.schedule_action(action, time)
-
-
-def schedule_animation(world, entity, repeat_count=0):
-   schedule_action(world, entity,
-      create_animation_action(world, entity, repeat_count),
-      entity.get_animation_rate())
-
-
-def clear_pending_actions(world, entity):
-   for action in entity.get_pending_actions():
-      world.unschedule_action(action)
-   entity.clear_pending_actions()

@@ -1,4 +1,5 @@
 import point
+import worldmodel
 from actions import *
 
 class Background:
@@ -115,7 +116,7 @@ class MinerNotFull:
 		if adjacent(entity_pt, ore_pt):
 		   self.set_resource_count(
 		      1 + self.get_resource_count())
-		   remove_entity(world, ore)
+		   ore.remove_entity(world)
 		   return ([ore_pt], True)
 		else:
 		   new_pt = self.next_position(world, ore_pt)
@@ -398,7 +399,7 @@ class Vein:
          open_pt = self.find_open_around(world,
             self.get_resource_distance())
          if open_pt:
-            ore = world.create_ore(
+            ore = world.create_ore1(
                "ore - " + self.get_name() + " - " + str(current_ticks),
                open_pt, current_ticks, i_store)
             world.add_entity(ore)
@@ -417,6 +418,12 @@ class Vein:
       schedule_action(world, self, self.create_vein_action(world, i_store),
          ticks + self.get_rate())
 
+      
+   def remove_entity(self, world):
+      for action in self.get_pending_actions():
+         world.unschedule_action(action)
+      self.clear_pending_actions()
+      world.remove_entity(self)
 
 class Ore:
    def __init__(self, name, position, imgs, rate=5000):
@@ -479,7 +486,7 @@ class Ore:
             self.get_rate() // BLOB_RATE_SCALE,
             current_ticks, i_store)
 
-         remove_entity(world, self)
+         self.remove_entity(world)
          world.add_entity(blob)
 
          return [blob.get_position()]
@@ -490,7 +497,12 @@ class Ore:
       schedule_action(world, self,
          self.create_ore_transform_action(world, i_store),
          ticks + self.get_rate())
-
+      
+   def remove_entity(self, world):
+      for action in self.get_pending_actions():
+         world.unschedule_action(action)
+      self.clear_pending_actions()
+      world.remove_entity(self)
 
 
 class Blacksmith:
@@ -676,13 +688,13 @@ class OreBlob:
          return ([entity_pt], False)
       vein_pt = vein.get_position()
       if adjacent(entity_pt, vein_pt):
-         remove_entity(world, vein)
+         vein.remove_entity(world)
          return ([vein_pt], True)
       else:
          new_pt = self.blob_next_position(world, vein_pt)
          old_entity = world.get_tile_occupant(new_pt)
          if isinstance(old_entity, entities.Ore):
-            remove_entity(world, old_entity)
+            old_entity.remove_entity(world)
          return (world.move_entity(self, new_pt), False)
 
 
@@ -771,7 +783,21 @@ class Quake:
 
    def schedule_quake(self, world, ticks):
       schedule_animation(world, self, QUAKE_STEPS) 
-      schedule_action(world, self, create_entity_death_action(world, self),
+      schedule_action(world, self, self.create_entity_death_action(world),
          ticks + QUAKE_DURATION)
 
+   def create_entity_death_action(self, world):
+      def action(current_ticks):
+         self.remove_pending_action(action)
+         pt = self.get_position()
+         self.remove_entity(world)
+         return [pt]
+      return action
+      
+      
+   def remove_entity(self, world):
+      for action in self.get_pending_actions():
+         world.unschedule_action(action)
+      self.clear_pending_actions()
+      world.remove_entity(self)
 

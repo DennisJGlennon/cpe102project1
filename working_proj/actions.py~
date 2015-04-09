@@ -51,9 +51,25 @@ def create_animation_action(world, entity, repeat_count):
       return [entity.get_position()]
    return action
 
+
+def create_entity_death_action(world, entity):
+   def action(current_ticks):
+      entity.remove_pending_action(action)
+      pt = entity.get_position()
+      remove_entity(world, entity)
+      return [pt]
+   return action
+
+def remove_entity(world, entity):
+   for action in entity.get_pending_actions():
+      world.unschedule_action(action)
+   entity.clear_pending_actions()
+   world.remove_entity(entity)
+
+
 def schedule_action(world, entity, action, time):
    entity.add_pending_action(action)
-   world.schedule_action(action, time)
+   world.schedule_action(action, time*.9)
 
 
 def schedule_animation(world, entity, repeat_count=0):
