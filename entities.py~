@@ -1,4 +1,5 @@
 import point
+import worldmodel
 from actions import *
 
 class Background:

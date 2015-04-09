@@ -66,6 +66,7 @@ def remove_entity(world, entity):
    entity.clear_pending_actions()
    world.remove_entity(entity)
 
+
 def schedule_action(world, entity, action, time):
    entity.add_pending_action(action)
    world.schedule_action(action, time)

@@ -1,4 +1,5 @@
 import point
+import worldmodel
 from actions import *
 
 class Background:
@@ -398,7 +399,7 @@ class Vein:
          open_pt = self.find_open_around(world,
             self.get_resource_distance())
          if open_pt:
-            ore = world.create_ore(
+            ore = world.create_ore1(
                "ore - " + self.get_name() + " - " + str(current_ticks),
                open_pt, current_ticks, i_store)
             world.add_entity(ore)

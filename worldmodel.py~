@@ -149,11 +149,11 @@ class WorldModel:
          image_store.get_images(i_store, 'blob'),
          random.randint(BLOB_ANIMATION_MIN, BLOB_ANIMATION_MAX)
          * BLOB_ANIMATION_RATE_SCALE)
-      schedule_blob(self, blob, ticks, i_store)
+      blob.schedule_blob(self, ticks, i_store)
       return blob
 
 
-   def create_ore(self, name, pt, ticks, i_store):
+   def create_ore1(self, name, pt, ticks, i_store):
       ore = entities.Ore(name, pt, image_store.get_images(i_store, 'ore'),
          random.randint(ORE_CORRUPT_MIN, ORE_CORRUPT_MAX))
       ore.schedule_ore(self, ticks, i_store)
