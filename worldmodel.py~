@@ -7,7 +7,7 @@ import math
 import random
 import point
 import image_store
-from action import *
+from actions import *
 
 BLOB_RATE_SCALE = 4
 BLOB_ANIMATION_RATE_SCALE = 50
@@ -156,7 +156,7 @@ class WorldModel:
    def create_ore(self, name, pt, ticks, i_store):
       ore = entities.Ore(name, pt, image_store.get_images(i_store, 'ore'),
          random.randint(ORE_CORRUPT_MIN, ORE_CORRUPT_MAX))
-      schedule_ore(self, ore, ticks, i_store)
+      ore.schedule_ore(self, ticks, i_store)
 
       return ore
 
@@ -164,7 +164,7 @@ class WorldModel:
    def create_quake(self, pt, ticks, i_store):
       quake = entities.Quake("quake", pt,
          image_store.get_images(i_store, 'quake'), QUAKE_ANIMATION_RATE)
-      schedule_quake(self, quake, ticks)
+      quake.schedule_quake(self, ticks)
       return quake
 
 

@@ -149,14 +149,14 @@ class WorldModel:
          image_store.get_images(i_store, 'blob'),
          random.randint(BLOB_ANIMATION_MIN, BLOB_ANIMATION_MAX)
          * BLOB_ANIMATION_RATE_SCALE)
-      schedule_blob(self, blob, ticks, i_store)
+      blob.schedule_blob(self, ticks, i_store)
       return blob
 
 
    def create_ore(self, name, pt, ticks, i_store):
       ore = entities.Ore(name, pt, image_store.get_images(i_store, 'ore'),
          random.randint(ORE_CORRUPT_MIN, ORE_CORRUPT_MAX))
-      schedule_ore(self, ore, ticks, i_store)
+      ore.schedule_ore(self, ticks, i_store)
 
       return ore
 
@@ -164,7 +164,7 @@ class WorldModel:
    def create_quake(self, pt, ticks, i_store):
       quake = entities.Quake("quake", pt,
          image_store.get_images(i_store, 'quake'), QUAKE_ANIMATION_RATE)
-      schedule_quake(self, quake, ticks)
+      quake.schedule_quake(self, ticks)
       return quake
 
 

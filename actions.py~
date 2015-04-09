@@ -66,37 +66,6 @@ def remove_entity(world, entity):
    entity.clear_pending_actions()
    world.remove_entity(entity)
 
-
-def schedule_blob(world, blob, ticks, i_store):
-   schedule_action(world, blob, blob.create_ore_blob_action(world, i_store),
-      ticks + blob.get_rate())
-   schedule_animation(world, blob)
-
-
-def schedule_miner(world, miner, ticks, i_store):
-   schedule_action(world, miner, miner.create_miner_action(world, i_store),
-      ticks + miner.get_rate())
-   schedule_animation(world, miner)
-
-
-def schedule_ore(world, ore, ticks, i_store):
-   schedule_action(world, ore,
-      ore.create_ore_transform_action(world, i_store),
-      ticks + ore.get_rate())
-
-
-
-def schedule_quake(world, quake, ticks):
-   schedule_animation(world, quake, QUAKE_STEPS) 
-   schedule_action(world, quake, create_entity_death_action(world, quake),
-      ticks + QUAKE_DURATION)
-
-
-def schedule_vein(world, vein, ticks, i_store):
-   schedule_action(world, vein, vein.create_vein_action(world, i_store),
-      ticks + vein.get_rate())
-
-
 def schedule_action(world, entity, action, time):
    entity.add_pending_action(action)
    world.schedule_action(action, time)

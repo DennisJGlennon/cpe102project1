@@ -171,6 +171,11 @@ class MinerNotFull:
          return self.create_miner_full_action(world, image_store)
 
 
+   def schedule_miner(self, world, ticks, i_store):
+      schedule_action(world, self, self.create_miner_action(world, i_store),
+         ticks + self.get_rate())
+      schedule_animation(world, self)
+
 class MinerFull:
    def __init__(self, name, resource_limit, position, rate, imgs,
       animation_rate):
@@ -408,6 +413,11 @@ class Vein:
       return action
 
 
+   def schedule_vein(self, world, ticks, i_store):
+      schedule_action(world, self, self.create_vein_action(world, i_store),
+         ticks + self.get_rate())
+
+
 class Ore:
    def __init__(self, name, position, imgs, rate=5000):
       self.name = name
@@ -475,6 +485,11 @@ class Ore:
          return [blob.get_position()]
       return action
 
+
+   def schedule_ore(self, world, ticks, i_store):
+      schedule_action(world, self,
+         self.create_ore_transform_action(world, i_store),
+         ticks + self.get_rate())
 
 
 
@@ -693,6 +708,11 @@ class OreBlob:
       return action
 
 
+   def schedule_blob(self, world, ticks, i_store):
+      schedule_action(world, self, self.create_ore_blob_action(world, i_store),
+         ticks + self.get_rate())
+      schedule_animation(world, self)
+
 
 class Quake:
    def __init__(self, name, position, imgs, animation_rate):
@@ -748,5 +768,10 @@ class Quake:
    def entity_string(self):
       return 'unknown'
 
+
+   def schedule_quake(self, world, ticks):
+      schedule_animation(world, self, QUAKE_STEPS) 
+      schedule_action(world, self, create_entity_death_action(world, self),
+         ticks + QUAKE_DURATION)
 
 
