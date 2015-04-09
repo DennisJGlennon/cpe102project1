@@ -3,7 +3,27 @@ import pygame
 import ordered_list
 import actions
 import occ_grid
+import math
+import random
 import point
+import image_store
+from actions import *
+
+BLOB_RATE_SCALE = 4
+BLOB_ANIMATION_RATE_SCALE = 50
+BLOB_ANIMATION_MIN = 1
+BLOB_ANIMATION_MAX = 3
+
+ORE_CORRUPT_MIN = 20000
+ORE_CORRUPT_MAX = 30000
+
+QUAKE_STEPS = 10
+QUAKE_DURATION = 1100
+QUAKE_ANIMATION_RATE = 100
+
+VEIN_SPAWN_DELAY = 500
+VEIN_RATE_MIN = 8000
+VEIN_RATE_MAX = 17000
 
 def distance_sq(p1, p2):
 	return (p1.x - p2.x)**2 + (p1.y - p2.y)**2
@@ -122,3 +142,38 @@ class WorldModel:
 
    def get_entities(self):
 		return self.entities
+		
+
+   def create_blob(self, name, pt, rate, ticks, i_store):
+      blob = entities.OreBlob(name, pt, rate,
+         image_store.get_images(i_store, 'blob'),
+         random.randint(BLOB_ANIMATION_MIN, BLOB_ANIMATION_MAX)
+         * BLOB_ANIMATION_RATE_SCALE)
+      schedule_blob(self, blob, ticks, i_store)
+      return blob
+
+
+   def create_ore(self, name, pt, ticks, i_store):
+      ore = entities.Ore(name, pt, image_store.get_images(i_store, 'ore'),
+         random.randint(ORE_CORRUPT_MIN, ORE_CORRUPT_MAX))
+      schedule_ore(self, ore, ticks, i_store)
+
+      return ore
+
+
+   def create_quake(self, pt, ticks, i_store):
+      quake = entities.Quake("quake", pt,
+         image_store.get_images(i_store, 'quake'), QUAKE_ANIMATION_RATE)
+      schedule_quake(self, quake, ticks)
+      return quake
+
+
+   def create_vein(self, name, pt, ticks, i_store):
+      vein = entities.Vein("vein" + name,
+         random.randint(VEIN_RATE_MIN, VEIN_RATE_MAX),
+         pt, i_store.get_images('vein'))
+      return vein
+
+		
+		
+		

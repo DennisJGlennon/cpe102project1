@@ -122,6 +122,55 @@ class MinerNotFull:
 		   return (world.move_entity(self, new_pt), False)
 
 
+   def create_miner_not_full_action(self, world, i_store):
+		def action(current_ticks):
+		   self.remove_pending_action(action)
+
+		   entity_pt = self.get_position()
+		   ore = world.find_nearest(entity_pt, entities.Ore)
+		   (tiles, found) = self.miner_to_ore(world, ore)
+
+		   new_entity = self
+		   if found:
+		      new_entity = self.try_transform_miner(world,
+		         self.try_transform_miner_not_full)
+
+		   schedule_action(world, new_entity,
+		      new_entity.create_miner_action(world, i_store),
+		      current_ticks + new_entity.get_rate())
+		   return tiles
+		return action
+
+
+   def try_transform_miner_not_full(self, world):
+      if self.resource_count < self.resource_limit:
+         return self
+      else:
+         new_entity = entities.MinerFull(
+            self.get_name(), self.get_resource_limit(),
+            self.get_position(), self.get_rate(),
+            self.get_images(), self.get_animation_rate())
+         return new_entity
+
+
+   def try_transform_miner(self, world, transform):
+      new_entity = transform(world)
+      if self != new_entity:
+         clear_pending_actions(world, self)
+         world.remove_entity_at(self.get_position())
+         world.add_entity(new_entity)
+         schedule_animation(world, new_entity)
+
+      return new_entity
+
+
+   def create_miner_action(self, world, image_store):
+      if isinstance(self, entities.MinerNotFull):
+         return self.create_miner_not_full_action(world, image_store)
+      else:
+         return self.create_miner_full_action(world, image_store)
+
+
 class MinerFull:
    def __init__(self, name, resource_limit, position, rate, imgs,
       animation_rate):
@@ -220,6 +269,52 @@ class MinerFull:
 		   return (world.move_entity(self, new_pt), False)
 
 
+   def create_miner_full_action(self, world, i_store):
+		def action(current_ticks):
+		   self.remove_pending_action(action)
+
+		   entity_pt = self.get_position()
+		   smith = world.find_nearest(entity_pt, entities.Blacksmith)
+		   (tiles, found) = self.miner_to_smith(world, smith)
+
+		   new_entity = self
+		   if found:
+		      new_entity = self.try_transform_miner(world,
+		         self.try_transform_miner_full)
+
+		   schedule_action(world, new_entity,
+		      new_entity.create_miner_action(world, i_store),
+		      current_ticks + new_entity.get_rate())
+		   return tiles
+		return action
+
+
+   def try_transform_miner_full(self, world):
+      new_entity = entities.MinerNotFull(
+         self.get_name(), self.get_resource_limit(),
+         self.get_position(), self.get_rate(),
+         self.get_images(), self.get_animation_rate())
+
+      return new_entity
+
+   def try_transform_miner(self, world, transform):
+      new_entity = transform(world)
+      if self != new_entity:
+         clear_pending_actions(world, self)
+         world.remove_entity_at(self.get_position())
+         world.add_entity(new_entity)
+         schedule_animation(world, new_entity)
+
+      return new_entity
+
+
+   def create_miner_action(self, world, image_store):
+      if isinstance(self, entities.MinerNotFull):
+         return self.create_miner_not_full_action(world, image_store)
+      else:
+         return self.create_miner_full_action(world, image_store)
+
+
 class Vein:
    def __init__(self, name, rate, position, imgs, resource_distance=1):
       self.name = name
@@ -278,6 +373,41 @@ class Vein:
          str(self.resource_distance)])
 
 
+   def find_open_around(self, world, distance):
+      pt = self.get_position()
+      for dy in range(-distance, distance + 1):
+         for dx in range(-distance, distance + 1):
+            new_pt = point.Point(pt.x + dx, pt.y + dy)
+
+            if (world.within_bounds(new_pt) and
+               (not world.is_occupied(new_pt))):
+               return new_pt
+
+      return None
+
+
+   def create_vein_action(self, world, i_store):
+      def action(current_ticks):
+         self.remove_pending_action(action)
+
+         open_pt = self.find_open_around(world,
+            self.get_resource_distance())
+         if open_pt:
+            ore = world.create_ore(
+               "ore - " + self.get_name() + " - " + str(current_ticks),
+               open_pt, current_ticks, i_store)
+            world.add_entity(ore)
+            tiles = [open_pt]
+         else:
+            tiles = []
+
+         schedule_action(world, self,
+            self.create_vein_action(world, i_store),
+            current_ticks + self.get_rate())
+         return tiles
+      return action
+
+
 class Ore:
    def __init__(self, name, position, imgs, rate=5000):
       self.name = name
@@ -329,6 +459,22 @@ class Ore:
    def entity_string(self): 
       return ' '.join(['ore', self.name, str(self.position.x),
          str(self.position.y), str(self.rate)])
+
+
+   def create_ore_transform_action(self, world, i_store):
+      def action(current_ticks):
+         self.remove_pending_action(action)
+         blob = world.create_blob(self.get_name() + " -- blob",
+            self.get_position(),
+            self.get_rate() // BLOB_RATE_SCALE,
+            current_ticks, i_store)
+
+         remove_entity(world, self)
+         world.add_entity(blob)
+
+         return [blob.get_position()]
+      return action
+
 
 
 
@@ -400,6 +546,8 @@ class Blacksmith:
       return ' '.join(['blacksmith', self.name, str(self.position.x),
          str(self.position.y), str(self.resource_limit),
          str(self.rate), str(self.resource_distance)])
+
+
 
 class Obstacle:
    def __init__(self, name, position, imgs):
@@ -488,6 +636,62 @@ class OreBlob:
 
    def entity_string(self):
       return 'unknown'
+
+   def blob_next_position(self, world, dest_pt):
+	   entity_pt = self.get_position()
+	   horiz = sign(dest_pt.x - entity_pt.x)
+	   new_pt = point.Point(entity_pt.x + horiz, entity_pt.y)
+
+	   if horiz == 0 or (world.is_occupied(new_pt) and
+		   not isinstance(world.get_tile_occupant(new_pt),
+		   entities.Ore)):
+		   vert = sign(dest_pt.y - entity_pt.y)
+		   new_pt = point.Point(entity_pt.x, entity_pt.y + vert)
+
+		   if vert == 0 or (world.is_occupied(new_pt) and
+			   not isinstance(world.get_tile_occupant(new_pt),
+			   entities.Ore)):
+			   new_pt = point.Point(entity_pt.x, entity_pt.y)
+
+	   return new_pt
+
+   def blob_to_vein(self, world, vein):
+      entity_pt = self.get_position()
+      if not vein:
+         return ([entity_pt], False)
+      vein_pt = vein.get_position()
+      if adjacent(entity_pt, vein_pt):
+         remove_entity(world, vein)
+         return ([vein_pt], True)
+      else:
+         new_pt = self.blob_next_position(world, vein_pt)
+         old_entity = world.get_tile_occupant(new_pt)
+         if isinstance(old_entity, entities.Ore):
+            remove_entity(world, old_entity)
+         return (world.move_entity(self, new_pt), False)
+
+
+   def create_ore_blob_action(self, world, i_store):
+      def action(current_ticks):
+         self.remove_pending_action(action)
+
+         entity_pt = self.get_position()
+         vein = world.find_nearest(entity_pt, entities.Vein)
+         (tiles, found) = self.blob_to_vein(world, vein)
+
+         next_time = current_ticks + self.get_rate()
+         if found:
+            quake = world.create_quake(tiles[0], current_ticks, i_store)
+            world.add_entity(quake)
+            next_time = current_ticks + self.get_rate() * 2
+
+         schedule_action(world, self,
+            self.create_ore_blob_action(world, i_store),
+            next_time)
+
+         return tiles
+      return action
+
 
 
 class Quake:
