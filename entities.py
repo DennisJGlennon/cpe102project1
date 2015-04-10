@@ -157,7 +157,7 @@ class MinerNotFull:
    def try_transform_miner(self, world, transform):
       new_entity = transform(world)
       if self != new_entity:
-         clear_pending_actions(world, self)
+         world.clear_pending_actions(self)
          world.remove_entity_at(self.get_position())
          world.add_entity(new_entity)
          schedule_animation(world, new_entity)
@@ -295,7 +295,7 @@ class MinerFull:
    def try_transform_miner(self, world, transform):
       new_entity = transform(world)
       if self != new_entity:
-         clear_pending_actions(world, self)
+         world.clear_pending_actions(self)
          world.remove_entity_at(self.get_position())
          world.add_entity(new_entity)
          schedule_animation(world, new_entity)
@@ -350,7 +350,7 @@ class Vein:
 
    def clear_pending_actions(self):
       if hasattr(self, "pending_actions"):
-         self.pending_actions = []
+         self.pending_actions = []   
 
    def next_image(self):
       self.current_img = (self.current_img + 1) % len(self.imgs)

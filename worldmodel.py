@@ -225,3 +225,9 @@ class WorldModel:
             for entity_type in valid_entities:
                 if isinstance(new_entity, entity_type):
                    new_entity.schedule_entity(self, 0, i_store)
+
+
+   def clear_pending_actions(self, entity):
+      for action in entity.get_pending_actions():
+         self.unschedule_action(action)
+      entity.clear_pending_actions()

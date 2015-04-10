@@ -56,8 +56,3 @@ def schedule_animation(world, entity, repeat_count=0):
       create_animation_action(world, entity, repeat_count),
       entity.get_animation_rate())
 
-
-def clear_pending_actions(world, entity):
-   for action in entity.get_pending_actions():
-      world.unschedule_action(action)
-   entity.clear_pending_actions()
