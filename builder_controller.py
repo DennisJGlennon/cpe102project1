@@ -35,12 +35,12 @@ def mouse_to_tile(pos, tile_width, tile_height):
 
 def save_world(world, filename):
    with open(filename, 'w') as file:
-      save_load.save_world(world, file)
+      world.save_world(file)
 
 
 def load_world(world, i_store, filename):
    with open(filename, 'r') as file:
-      save_load.load_world(world, i_store, file)
+      world.load_world(i_store, file)
 
 
 def on_keydown(event, world, entity_select, i_store):
