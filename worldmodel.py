@@ -153,7 +153,6 @@ class WorldModel:
       return blob
 
 
-
    def create_ore(self, name, pt, ticks, i_store):
       ore = entities.Ore(name, pt, image_store.get_images(i_store, 'ore'),
          random.randint(ORE_CORRUPT_MIN, ORE_CORRUPT_MAX))

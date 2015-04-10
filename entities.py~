@@ -2,6 +2,23 @@ import point
 import worldmodel
 from actions import *
 
+
+BLOB_RATE_SCALE = 4
+BLOB_ANIMATION_RATE_SCALE = 50
+BLOB_ANIMATION_MIN = 1
+BLOB_ANIMATION_MAX = 3
+
+ORE_CORRUPT_MIN = 20000
+ORE_CORRUPT_MAX = 30000
+
+QUAKE_STEPS = 10
+QUAKE_DURATION = 1100
+QUAKE_ANIMATION_RATE = 100
+
+VEIN_SPAWN_DELAY = 500
+VEIN_RATE_MIN = 8000
+VEIN_RATE_MAX = 17000
+
 class Background:
    def __init__(self, name, imgs):
       self.name = name
@@ -444,7 +461,7 @@ class Vein:
          open_pt = self.find_open_around(world,
             self.get_resource_distance())
          if open_pt:
-            ore = world.create_ore1(
+            ore = world.create_ore(
                "ore - " + self.get_name() + " - " + str(current_ticks),
                open_pt, current_ticks, i_store)
             world.add_entity(ore)
