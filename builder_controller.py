@@ -35,12 +35,12 @@ def mouse_to_tile(pos, tile_width, tile_height):
 
 def save_world(world, filename):
    with open(filename, 'w') as file:
-      save_load.save_world(world, file)
+      world.save_world(file)
 
 
 def load_world(world, i_store, filename):
    with open(filename, 'r') as file:
-      save_load.load_world(world, i_store, file)
+      world.load_world(i_store, file)
 
 
 def on_keydown(event, world, entity_select, i_store):
@@ -67,7 +67,11 @@ def handle_keydown(view, event, i_store, world, entity_select):
    (view_delta, entity_select) = on_keydown(event, world,
       entity_select, i_store)
    view.update_view(view_delta,
+<<<<<<< HEAD
       image_store.get_images(i_store,entity_select)[0])
+=======
+      image_store.get_images(i_store, entity_select)[0])
+>>>>>>> ef5d0d10adbae67ed0396e8f15ace0ac5aefedd0
 
    return entity_select
 
@@ -111,11 +115,19 @@ def handle_mouse_button(view, world, event, entity_select, i_store):
       else:
          new_entity = create_new_entity(tile_view_pt, entity_select, i_store)
          if new_entity:
+<<<<<<< HEAD
             world.remove_entity_at(wtile_view_pt)
             world.add_entity(new_entity)
             return [tile_view_pt]
    elif event.button == mouse_buttons.RIGHT:
       world.remove_entity_at(tile_view_pt)
+=======
+            world.remove_entity_at(tile_view_pt)
+            world.add_entity(new_entity)
+            return [tile_view_pt]
+   elif event.button == mouse_buttons.RIGHT:
+      world.remove_entity_at(world, tile_view_pt)
+>>>>>>> ef5d0d10adbae67ed0396e8f15ace0ac5aefedd0
       return [tile_view_pt]
 
    return []

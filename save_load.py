@@ -52,6 +52,7 @@ VEIN_ROW = 3
 VEIN_REACH = 5
 
 
+<<<<<<< HEAD
 def save_world(world, file):
    save_entities(world, file)
    save_background(world, file)
@@ -93,6 +94,8 @@ def add_entity(world, properties, i_store, run):
       world.add_entity(new_entity)
       if run:
          schedule_entity(world, new_entity, i_store)
+=======
+>>>>>>> ef5d0d10adbae67ed0396e8f15ace0ac5aefedd0
 
 
 def create_from_properties(properties, i_store):
@@ -165,6 +168,7 @@ def create_obstacle(properties, i_store):
          image_store.get_images(i_store,properties[PROPERTY_KEY]))
    else:
       return None
+<<<<<<< HEAD
 
 
 def schedule_entity(world, entity, i_store):
@@ -174,3 +178,5 @@ def schedule_entity(world, entity, i_store):
       entity.schedule_vein(world, 0, i_store)
    elif isinstance(entity, entities.Ore):
       entity.schedule_ore(world, 0, i_store)
+=======
+>>>>>>> ef5d0d10adbae67ed0396e8f15ace0ac5aefedd0

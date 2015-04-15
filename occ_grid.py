@@ -18,5 +18,15 @@ class Grid:
    def set_cell(self, point, value):
    	self.cells[point.y][point.x] = value
 
+<<<<<<< HEAD
    def get_cell(self, point):
  	return self.cells[point.y][point.x]
+=======
+   def set_cell(self, point, value):
+      self.cells[point.y][point.x] = value
+
+
+   def get_cell(self, point):
+      return self.cells[point.y][point.x]
+
+>>>>>>> ef5d0d10adbae67ed0396e8f15ace0ac5aefedd0
