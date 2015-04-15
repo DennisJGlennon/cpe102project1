@@ -67,18 +67,14 @@ def handle_keydown(view, event, i_store, world, entity_select):
    (view_delta, entity_select) = on_keydown(event, world,
       entity_select, i_store)
    view.update_view(view_delta,
-<<<<<<< HEAD
-      image_store.get_images(i_store,entity_select)[0])
-=======
       image_store.get_images(i_store, entity_select)[0])
->>>>>>> ef5d0d10adbae67ed0396e8f15ace0ac5aefedd0
 
    return entity_select
 
 
 def create_new_entity(pt, entity_select, i_store):
    name = entity_select + '_' + str(pt.x) + '_' + str(pt.y)
-   images = image_store.get_images(i_store,entity_select)
+   images = image_store.get_images(i_store, entity_select)
    if entity_select == 'obstacle':
       return entities.Obstacle(name, pt, images)
    elif entity_select == 'miner':
@@ -110,24 +106,16 @@ def handle_mouse_button(view, world, event, entity_select, i_store):
       if is_background_tile(entity_select):
          world.set_background(tile_view_pt,
             entities.Background(entity_select,
-               image_store.get_images(i_store,entity_select)))
+               image_store.get_images(i_store, entity_select)))
          return [tile_view_pt]
       else:
          new_entity = create_new_entity(tile_view_pt, entity_select, i_store)
          if new_entity:
-<<<<<<< HEAD
-            world.remove_entity_at(wtile_view_pt)
-            world.add_entity(new_entity)
-            return [tile_view_pt]
-   elif event.button == mouse_buttons.RIGHT:
-      world.remove_entity_at(tile_view_pt)
-=======
             world.remove_entity_at(tile_view_pt)
             world.add_entity(new_entity)
             return [tile_view_pt]
    elif event.button == mouse_buttons.RIGHT:
       world.remove_entity_at(world, tile_view_pt)
->>>>>>> ef5d0d10adbae67ed0396e8f15ace0ac5aefedd0
       return [tile_view_pt]
 
    return []
