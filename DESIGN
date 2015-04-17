@@ -1,0 +1,296 @@
+class: Entity
+methods:
+     get_images
+     get_image
+     get_name
+     next_image
+
+
+class: Background
+methods:
+     entity_string
+     
+class: Blacksmith
+methods:
+     set_position
+     get_position
+     get_rate
+     
+     get_resource_count
+     set_resource_count
+     get_resource_limit
+     get_resource_distance
+     
+     remove_pending_action
+     add_pending_action
+     get_pending_actions
+     clear_pending_actions
+     
+     entity_string
+     
+class: Obstacle
+methods:
+     set_position
+     get_position
+     get_rate
+     
+     entity_string
+
+class: MinerFull
+methods:
+     set_position
+     get_position
+     get_rate
+     
+     set_resource_count
+     get_resource_count
+     get_resource_limit
+   
+     get_animation_rate
+
+     add_pending_action
+     remove_pending_action 
+     get_pending_actions
+     clear_pending_actions
+     
+     next_position
+     
+     miner_to_smith
+     create_miner_action
+     try_transform_miner_full
+     try_transform_miner
+     
+     create_animation_action
+     schedule_action
+     schedule_animation
+          
+     entity_string
+     
+class: MinerNotFull
+methods:
+     set_position
+     get_position
+     get_rate
+     
+     set_resource_count
+     get_resource_count
+     get_resource_limit
+
+     get_animation_rate
+
+     add_pending_action
+     remove_pending_action 
+     get_pending_actions
+     clear_pending_actions
+     
+     next_position*
+     
+     create_animation_action     
+     schedule_action
+     schedule_animation     
+     schedule_entity*(different from minerFull)
+
+     miner_to_ore*(diff from MinerFull)
+     create_miner_action*
+     try_transform_miner_not_full*(diff from MinerFull)
+     try_transform_miner*
+
+     entity_string
+
+class: OreBlob
+methods:
+     set_position
+     get_position
+     get_rate
+
+     add_pending_action
+     remove_pending_action 
+     get_pending_actions
+     clear_pending_actions
+ 
+     get_animation_rate**
+
+     create_animation_action     
+     schedule_action
+     schedule_animation
+     schedule_entity
+
+     blob_next_position*
+     blob_to_vein*
+     create_ore_blob_action*
+
+     entity_string
+     
+class: Vein
+method:
+     set_position
+     get_position
+     get_rate
+     
+     get_resource_distance
+     
+     add_pending_action
+     remove_pending_action 
+     get_pending_actions
+     clear_pending_actions
+
+     create_animation_action     
+     schedule_action
+     schedule_animation
+     schedule_entity
+     remove_entity
+     
+     find_open_around*
+     create_vein_action*
+
+     entity_string
+     
+class: Ore
+methods:
+     set_position
+     get_position
+     get_rate
+     
+     add_pending_action
+     remove_pending_action 
+     get_pending_actions
+     clear_pending_actions
+     
+     create_ore_transform_action*
+
+     entity_string
+
+class: Quake
+methods:
+     set_position
+     get_position
+     get_rate
+     
+     get_animation_rate
+     
+     add_pending_action
+     remove_pending_action 
+     get_pending_actions
+     clear_pending_actions
+
+     create_animation_action     
+     schedule_action
+     schedule_animation
+     schedule_entity
+     remove_entity
+     
+     create_entity_death_action*
+
+     entity_string
+
+**************
+
+Functions that are not within classes: 
+
+**************
+
+sign
+   Simple math function, no need to be in a class.
+
+ mouse_to_tile
+   Should go in a 'UserInput' class, which doesn't exist.
+
+ save_world
+   Simple function that calls a similar function using specific values. A simple   , situation specific function.
+
+ load_world
+   Simple function that calls a similar function using specific values. A simple   , situation specific function.
+
+ on_keydown
+   Should go in a 'UserInput' class, which doesn't exist.
+
+ handle_mouse_motion
+   Should go in a 'UserInput' class, which doesn't exist.
+
+ handle_keydown
+   Should go in a 'UserInput' class, which doesn't exist.
+
+ create_new_entity
+   Specific function that doesn't really belong in any class. Could perhaps be 
+   broken into differenct functions that could be sorted into classes.
+ 
+ is_background_tile
+   Simple getter of a specific string. 
+
+ handle_mouse_button
+   Should go in a 'UserInput' class, which doesn't exist.
+
+ activity_loop
+   Specific function that doesn't really belong in any class. Could perhaps be 
+   broken into differenct functions that could be sorted into classes.
+
+ create_default_background
+   Creates single, specific object. Such simple functions don't fit in any current classes.
+
+ on_keydown
+   Should go in a 'UserInput' class, which doesn't exist.
+
+ mouse_to_tile
+   Should go in a 'UserInput' class, which doesn't exist.
+
+ handle_timer_event
+   Child function to activity loop, no sorting needed.
+
+ handle_mouse_motion
+   Child function to activity loop, no sorting needed.
+
+ handle_keydown
+   Child function to activity loop, no sorting needed.
+
+ activity_loop
+   Special, non class specific function.
+
+ create_default_image
+   Creates single, specific object. Such simple functions don't fit in any curre   nt classes.
+
+ load_images
+   Image manipulation, no proper class.
+
+ process_image_line
+   Image manipulation, no proper class.
+
+ get_images_internal
+   Image manipulation, no proper class.
+
+ get_images
+   Image manipulation, no proper class.
+
+ create_default_background
+   Creates single, specific object. Such simple functions don't fit in any curre   nt classes.
+
+ load_world
+   Simple function that calls a similar function using specific values. A simple   , situation specific function.
+
+ create_from_properties
+   Using a key to create the entity the key points towards doesn't fit a class.
+
+ create_miner
+   Using a key to create the entity the key points towards doesn't fit a class.
+
+ create_vein
+   Using a key to create the entity the key points towards doesn't fit a class.
+
+ create_ore
+   Using a key to create the entity the key points towards doesn't fit a class.
+
+ create_blacksmith
+   Using a key to create the entity the key points towards doesn't fit a class.
+
+ create_obstacle
+   Using a key to create the entity the key points towards doesn't fit a class.
+
+ distance_sq
+   Simple math function, no class needed.
+
+ nearest_entity
+   Simple math function, no class needed.
+
+ clamp
+   Simple math function, no class needed.
+
+
