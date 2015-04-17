@@ -458,7 +458,11 @@ class Vein:
       self.clear_pending_actions()
       world.remove_entity(self)
 
+<<<<<<< HEAD
    '''
+=======
+
+>>>>>>> b46f0cc6e257e01fa85f4d4f7040d15c39a24ce7
    def create_animation_action(self, world, repeat_count):
       def action(current_ticks):
          self.remove_pending_action(action)
@@ -472,18 +476,29 @@ class Vein:
 
          return [self.get_position()]
       return action
+<<<<<<< HEAD
    '''
+=======
+>>>>>>> b46f0cc6e257e01fa85f4d4f7040d15c39a24ce7
 
    def schedule_action(self, world, action, time):
       self.add_pending_action(action)
       world.schedule_action(action, time)
 
+<<<<<<< HEAD
    '''
+=======
+
+>>>>>>> b46f0cc6e257e01fa85f4d4f7040d15c39a24ce7
    def schedule_animation(self, world, repeat_count=0):
       self.schedule_action(world, self,
          self.create_animation_action(world, repeat_count),
          self.get_animation_rate())
+<<<<<<< HEAD
    '''
+=======
+
+>>>>>>> b46f0cc6e257e01fa85f4d4f7040d15c39a24ce7
 
 class Ore:
    def __init__(self, name, position, imgs, rate=5000):
@@ -589,6 +604,31 @@ class Ore:
       self.add_pending_action(action)
       world.schedule_action(action, time)
 
+   def create_animation_action(self, world, repeat_count):
+      def action(current_ticks):
+         self.remove_pending_action(action)
+
+         self.next_image()
+
+         if repeat_count != 1:
+            self.schedule_action(world,
+               self.create_animation_action(world, max(repeat_count - 1, 0)),
+               current_ticks + self.get_animation_rate())
+
+         return [self.get_position()]
+      return action
+
+   def schedule_action(self, world, action, time):
+      self.add_pending_action(action)
+      world.schedule_action(action, time)
+
+
+   def schedule_animation(self, world, repeat_count=0):
+      self.schedule_action(world,
+         self.create_animation_action(world, repeat_count),
+         self.get_animation_rate())
+
+
 class Blacksmith:
    def __init__(self, name, position, imgs, resource_limit, rate,
       resource_distance=1):
@@ -662,6 +702,7 @@ class Blacksmith:
    def create_animation_action(self, world, repeat_count):
       def action(current_ticks):
          self.remove_pending_action(action)
+<<<<<<< HEAD
 
          self.next_image()
 
@@ -678,6 +719,24 @@ class Blacksmith:
       world.schedule_action(action, time)
 
 
+=======
+
+         self.next_image()
+
+         if repeat_count != 1:
+            self.schedule_action(world,
+               self.create_animation_action(world, max(repeat_count - 1, 0)),
+               current_ticks + self.get_animation_rate())
+
+         return [self.get_position()]
+      return action
+
+   def schedule_action(self, world, action, time):
+      self.add_pending_action(action)
+      world.schedule_action(action, time)
+
+
+>>>>>>> b46f0cc6e257e01fa85f4d4f7040d15c39a24ce7
    def schedule_animation(self, world, repeat_count=0):
       self.schedule_action(world,
          self.create_animation_action(world, repeat_count),

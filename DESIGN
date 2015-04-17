@@ -1,9 +1,72 @@
+<<<<<<< HEAD
 class: Entity
+=======
+class: Grid
+methods:
+     set_cell
+     get_cell
+class: OrderedList
+methods:
+     insert
+     remove
+     head
+     pop
+class: ListItem
+methods:
+class: Point
+methods:
+     adjacent
+class: WorldModel
+methods:
+     within_bounds
+     is_occupied
+     find_nearest
+     add_entity
+     move_entity
+     remove_entity
+     remove_entity_at
+     schedule_action
+     unschedule_action
+     update_on_time
+     get_background_image
+     get_background
+     set_background
+     get_tile_occupant
+     get_entities
+     create_blob
+     create_ore1
+     create_quake
+     create_vein
+     save_world
+     save_entities
+     save_background
+     load_world
+     add_background
+     add_entity_schedule
+     clear_pending_actions
+class: WorldView
+methods:
+     viewport_to_world
+     world_to_viewport
+     create_shifted_viewport
+     draw_background
+     draw_entities
+     draw_viewport
+     update_view(self, view_delta=
+     update_view_tiles
+     update_tile
+     get_tile_image
+     create_mouse_surface
+     update_mouse_cursor
+     mouse_move
+class: Background
+>>>>>>> b46f0cc6e257e01fa85f4d4f7040d15c39a24ce7
 methods:
      get_images
      get_image
      get_name
      next_image
+<<<<<<< HEAD
 
 
 class: Background
@@ -21,10 +84,27 @@ methods:
      get_resource_limit
      get_resource_distance
      
+=======
+     entity_string
+class: MinerNotFull
+methods:
+     get_name
+     set_position
+     get_position
+     get_rate
+     get_images
+     get_image
+     next_image
+     get_resource_limit
+     set_resource_count
+     get_resource_count
+     get_animation_rate
+>>>>>>> b46f0cc6e257e01fa85f4d4f7040d15c39a24ce7
      remove_pending_action
      add_pending_action
      get_pending_actions
      clear_pending_actions
+<<<<<<< HEAD
      
      entity_string
      
@@ -36,10 +116,25 @@ methods:
      
      entity_string
 
+=======
+     entity_string
+     next_position
+     miner_to_ore
+     create_miner_action
+     action
+     try_transform_miner_not_full
+     try_transform_miner
+     schedule_entity
+     create_animation_action
+     action
+     schedule_action
+     schedule_animation
+>>>>>>> b46f0cc6e257e01fa85f4d4f7040d15c39a24ce7
 class: MinerFull
 methods:
      set_position
      get_position
+<<<<<<< HEAD
      get_rate
      
      set_resource_count
@@ -55,10 +150,28 @@ methods:
      
      next_position
      
+=======
+     get_images
+     get_image
+     get_rate
+     set_resource_count
+     get_resource_count
+     get_resource_limit
+     get_name
+     get_animation_rate
+     remove_pending_action
+     add_pending_action
+     get_pending_actions
+     clear_pending_actions
+     next_image
+     entity_string
+     next_position
+>>>>>>> b46f0cc6e257e01fa85f4d4f7040d15c39a24ce7
      miner_to_smith
      create_miner_action
      try_transform_miner_full
      try_transform_miner
+<<<<<<< HEAD
      
      create_animation_action
      schedule_action
@@ -160,10 +273,117 @@ methods:
 
      entity_string
 
+=======
+     create_animation_action
+     action
+     schedule_action
+     schedule_animation
+class: Vein
+method:
+     set_position
+     get_position
+     get_images
+     get_image
+     get_rate
+     get_resource_distance
+     get_name
+     remove_pending_action
+     add_pending_action
+     get_pending_actions
+     clear_pending_actions
+     next_image
+     entity_string
+     find_open_around
+     create_vein_action
+     schedule_entity
+     remove_entity
+     create_animation_action
+     action
+     schedule_action
+     schedule_animation
+class: Ore
+methods:
+     set_position
+     get_position
+     get_images
+     get_image
+     get_rate
+     get_name
+     remove_pending_action
+     add_pending_action
+     get_pending_actions
+     clear_pending_actions
+     next_image
+     entity_string
+     create_ore_transform_action
+     action
+     schedule_entity
+     remove_entity
+     create_animation_action
+     schedule_action
+     schedule_animation
+class: Blacksmith
+methods:
+     set_position
+     get_position
+     get_images
+     get_image
+     get_rate
+     get_resource_count
+     set_resource_count
+     get_resource_limit
+     get_resource_distance
+     get_name
+     remove_pending_action
+     add_pending_action
+     get_pending_actions
+     clear_pending_actions
+     next_image
+     entity_string
+     create_animation_action
+     schedule_action
+     schedule_animation
+class: Obstacle
+methods:
+     set_position
+     get_position
+     get_images
+     get_image
+     get_rate
+     get_name
+     next_image
+     entity_string
+     create_animation_action
+     schedule_action
+     schedule_animation
+class: OreBlob
+methods:
+     set_position
+     get_position
+     get_images
+     get_image
+     get_rate
+     get_name
+     get_animation_rate
+     remove_pending_action
+     add_pending_action
+     get_pending_actions
+     clear_pending_actions
+     next_image
+     entity_string
+     blob_next_position
+     blob_to_vein
+     create_ore_blob_action
+     schedule_entity
+     create_animation_action
+     schedule_action
+     schedule_animation
+>>>>>>> b46f0cc6e257e01fa85f4d4f7040d15c39a24ce7
 class: Quake
 methods:
      set_position
      get_position
+<<<<<<< HEAD
      get_rate
      
      get_animation_rate
@@ -182,6 +402,25 @@ methods:
      create_entity_death_action*
 
      entity_string
+=======
+     get_images
+     get_image
+     get_rate
+     get_name
+     get_animation_rate
+     remove_pending_action
+     add_pending_action
+     get_pending_actions
+     clear_pending_actions
+     next_image
+     entity_string
+     schedule_entity
+     create_entity_death_action
+     remove_entity
+     create_animation_action
+     schedule_action
+     schedule_animation
+>>>>>>> b46f0cc6e257e01fa85f4d4f7040d15c39a24ce7
 
 **************
 
@@ -293,4 +532,7 @@ sign
  clamp
    Simple math function, no class needed.
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> b46f0cc6e257e01fa85f4d4f7040d15c39a24ce7
