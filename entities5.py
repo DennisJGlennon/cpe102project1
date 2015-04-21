@@ -3,11 +3,10 @@ import worldmodel
 from actions import *
 
 class Entity(object):
-   def __init__(self, name, imgs, entity_string):
+   def __init__(self, name, imgs):
       self.name = name
       self.imgs = imgs
       self.current_img = 0
-      self.entity_string = entity_string
 
    def get_images(self):
       return self.imgs
@@ -20,16 +19,12 @@ class Entity(object):
 
    def next_image(self):
       self.current_img = (self.current_img + 1) % len(self.imgs)
-      
-   def entity_string(self):
-      return ' '.join([self.entity_string, self.name, str(self.position.x),
-         str(self.position.y)])
 
 
 class CoordEntity(Entity):
-   def __init__(self, name, position, imgs, entity_string):
+   def __init__(self, name, position, imgs):
       self.position = position
-      super(CoordEntity,self).__init__(name,imgs,entity_string)  
+      super(CoordEntity,self).__init__(name,imgs)  
 
    def set_position(self, point):
       self.position = point
@@ -39,9 +34,9 @@ class CoordEntity(Entity):
       
 
 class Actor(CoordEntity):
-   def __init__(self, name, position, imgs, entity_string='unknown'):
+   def __init__(self, name, position, imgs):
       self.pending_actions = []   
-      super(Actor,self).__init__(name,position,imgs,entity_string)  
+      super(Actor,self).__init__(name,position,imgs)  
       
    def remove_pending_action(self, action):
       if hasattr(self, "pending_actions"):
@@ -67,12 +62,12 @@ class Actor(CoordEntity):
       
          
 class RateActor(Actor):
-   def __init__(self, name, position, imgs, rate, entity_string='unknown'):
+   def __init__(self, name, position, imgs, rate):
       self.rate = rate
-      super(RateActor,self).__init__(name,position,imgs,entity_string)  
+      super(RateActor,self).__init__(name,position,imgs)  
       
    def get_rate(self):
-      return self.rate
+      return self.rate      
 
 
 class Animated(object):
@@ -101,8 +96,8 @@ class Animated(object):
          self.create_animation_action(world, repeat_count),
          self.get_animation_rate())
 
-
 class Remove(object):
+      
    def remove_entity(self, world):
       for action in self.get_pending_actions():
          world.unschedule_action(action)
@@ -110,13 +105,15 @@ class Remove(object):
       world.remove_entity(self)   
 
 
-class ResourceCarrier(RateActor):
-   def __init__(self, name, position, imgs, rate, resource_limit, 
-                resource_count=0 ,entity_string='unknown'):
-      self.resource_count = resource_count
+class Miner(RateActor,Animated):
+   def __init__(self, name, resource_limit, position, rate, imgs,
+      animation_rate):
+      self.animation_rate = animation_rate
+      super(Miner,self).__init__(name,position,imgs,rate)
+      #super(Miner,self).__init__(animation_rate)
+
       self.resource_limit = resource_limit
-      super(ResourceCarrier,self).__init__(name,position,imgs,rate,entity_string) 
-      
+###########
    def get_resource_limit(self):
       return self.resource_limit
       
@@ -124,27 +121,8 @@ class ResourceCarrier(RateActor):
       self.resource_count = n
 
    def get_resource_count(self):
-      return self.resource_count   
-
-
-class ResourceFinder(RateActor):
-   def __init__(self, name, position, imgs, rate, resource_distance=1,
-               entity_string='unknown'):
-      self.resource_distance = resource_distance
-      super(ResourceFinder,self).__init__(name,position,imgs,
-                                          rate,entity_string)    
-      
-   def get_resource_distance(self):
-      return self.resource_distance      
-      
-      
-class Miner(ResourceCarrier,Animated):
-   def __init__(self, name, position, rate, imgs,
-      animation_rate, resource_limit, resource_count, entity_string='unknown'):
-      self.animation_rate = animation_rate
-      super(Miner,self).__init__(name,position,imgs,rate,resource_limit,
-                                 resource_count, entity_string)
-  
+      return self.resource_count
+############      
    def next_position(self, world, dest_pt): #both miners
       entity_pt = self.get_position()
       horiz = sign(dest_pt.x - entity_pt.x)
@@ -169,26 +147,53 @@ class Miner(ResourceCarrier,Animated):
       return new_entity      
       
 
+
+
+
 class Background(Entity):
    pass
 
 
 class Obstacle(CoordEntity):
-   def __init__(self, name, position, imgs):
-      super(Obstacle,self).__init__(name,position,imgs,'obstacle')
 
-                
-class Blacksmith(ResourceCarrier, ResourceFinder):
+   def entity_string(self):
+      return ' '.join(['obstacle', self.name, str(self.position.x),
+         str(self.position.y)])
+
+class Blacksmith(RateActor):
    def __init__(self, name, position, imgs, resource_limit, rate,
-      resource_distance=1,resource_count=0):
+      resource_distance=1):
+      self.resource_limit = resource_limit
+      self.resource_count = 0
       self.resource_distance = resource_distance
-      super(Blacksmith,self).__init__(name,position,imgs,rate,
-                                      resource_limit,resource_count,'blacksmith')
+      super(Blacksmith,self).__init__(name,position,imgs,rate)
+
+   def get_resource_count(self):
+      return self.resource_count
+
+   def set_resource_count(self, n):
+      self.resource_count = n
+
+   def get_resource_limit(self):
+      return self.resource_limit
+
+   def get_resource_distance(self):
+      return self.resource_distance
+
+   def entity_string(self):
+      return ' '.join(['blacksmith', self.name, str(self.position.x),
+         str(self.position.y), str(self.resource_limit),
+         str(self.rate), str(self.resource_distance)])
  
+
 
 class Ore(RateActor, Remove):
    def __init__(self, name, position, imgs, rate=5000):
-      super(Ore,self).__init__(name,position,imgs,rate,'ore')
+      super(Ore,self).__init__(name,position,imgs,rate)
+
+   def entity_string(self): 
+      return ' '.join(['ore', self.name, str(self.position.x),
+         str(self.position.y), str(self.rate)])
 
    def create_ore_transform_action(self, world, i_store):
       def action(current_ticks):
@@ -210,9 +215,16 @@ class Ore(RateActor, Remove):
          ticks + self.get_rate())
 
 
-class Vein(ResourceFinder,Remove):
+
+class Vein(RateActor,Remove):
    def __init__(self, name, rate, position, imgs, resource_distance=1):
-      super(Vein,self).__init__(name,position,imgs,rate,resource_distance,'vein')
+      self.resource_distance = resource_distance
+      super(Vein,self).__init__(name,position,imgs,rate)
+      
+   def entity_string(self): 
+      return ' '.join(['vein', self.name, str(self.position.x),
+         str(self.position.y), str(self.rate),
+         str(self.resource_distance)])
 
    def find_open_around(self, world, distance):
       pt = self.get_position()
@@ -225,6 +237,9 @@ class Vein(ResourceFinder,Remove):
                return new_pt
 
       return None
+
+   def get_resource_distance(self):
+      return self.resource_distance
 
    def create_vein_action(self, world, i_store):
       def action(current_ticks):
@@ -252,11 +267,14 @@ class Vein(ResourceFinder,Remove):
          ticks + self.get_rate())
 
 
+
+
 class MinerNotFull(Miner):
    def __init__(self, name, resource_limit, position, rate, imgs,
       animation_rate):
-      super(MinerNotFull,self).__init__(name,position,rate,imgs,
-         animation_rate, resource_limit, 0, 'miner') #resource_count = 0
+      self.resource_count = 0
+      super(MinerNotFull,self).__init__(name,resource_limit,position,rate,imgs,
+         animation_rate)
 
    def miner_to_ore(self, world, ore): #miner not
       entity_pt = self.get_position()
@@ -303,6 +321,8 @@ class MinerNotFull(Miner):
             self.get_images(), self.get_animation_rate())
          return new_entity
 
+
+
    def schedule_entity(self, world, ticks, i_store):
       self.schedule_action(world, self.create_miner_action(world, i_store),
          ticks + self.get_rate())
@@ -312,9 +332,11 @@ class MinerNotFull(Miner):
 class MinerFull(Miner):
    def __init__(self, name, resource_limit, position, rate, imgs,
       animation_rate):
-      super(MinerFull,self).__init__(name,position,rate,imgs,
-         animation_rate, resource_limit, resource_limit) 
-         #resource_count=resource_limit
+      self.resource_count = resource_limit
+      super(MinerFull,self).__init__(name,resource_limit,position,rate,imgs,
+         animation_rate)
+
+
 
    def miner_to_smith(self, world, smith):
       entity_pt = self.get_position()
@@ -348,6 +370,7 @@ class MinerFull(Miner):
          return tiles
       return action
 
+
    def try_transform_miner_full(self, world):
       new_entity = entities.MinerNotFull(
          self.get_name(), self.get_resource_limit(),
@@ -356,13 +379,11 @@ class MinerFull(Miner):
 
       return new_entity
 
-
 class OreBlob(RateActor, Animated):
    def __init__(self, name, position, rate, imgs,
       animation_rate):
       self.animation_rate = animation_rate
       super(OreBlob, self).__init__(name,position,imgs,rate)
-      
    def blob_next_position(self, world, dest_pt):
       entity_pt = self.get_position()
       horiz = sign(dest_pt.x - entity_pt.x)
@@ -396,6 +417,7 @@ class OreBlob(RateActor, Animated):
             old_entity.remove_entity(world)
          return (world.move_entity(self, new_pt), False)
 
+
    def create_ore_blob_action(self, world, i_store):
       def action(current_ticks):
          self.remove_pending_action(action)
@@ -416,6 +438,7 @@ class OreBlob(RateActor, Animated):
 
          return tiles
       return action
+
 
    def schedule_entity(self, world, ticks, i_store):
       self.schedule_action(world, self.create_ore_blob_action(world, i_store),

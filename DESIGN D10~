@@ -40,6 +40,7 @@ attributes:
      self.rate = rate
 methods:
      get_rate
+     schedule_entity_main #never executes for Blacksmith...
 
 
 class: Animated(object)
@@ -75,7 +76,9 @@ methods:
      next_position
      try_transform_miner
 
-
+class: Scheduled(object)
+methods
+   schedule_entity
 
 Child Classes:
 
@@ -89,16 +92,7 @@ methods:
       
           
 class: Blacksmith(ResourceFinder, ResourceCarrier)
-attributes:
-      self.resource_limit = resource_limit
-      self.resource_count = 0
-      self.resource_distance = resource_distance
-methods:  
-     get_resource_count
-     set_resource_count
-     get_resource_limit
-     get_resource_distance
-     
+methods:     
      entity_string
 
 

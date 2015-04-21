@@ -33,26 +33,24 @@ methods:
      
      schedule_action
      schedule_entity*(add later)
-     
-
-class: Animated
-attributes:
-    self.animation_rate = animation_rate
-methods:
-    schedule_animation   
-    create_animation_action  
 
 class: RateActor(Actor)
 attributes:
      self.rate = rate
 methods:
      get_rate
-     
-class: Remove
+
+class: Animated(object)
+attributes:
+    self.animation_rate = animation_rate
+methods:
+    schedule_animation   
+    create_animation_action      
+class: Remove(object)
 methods:
      remove_entity
 
-class: ResourceCarrier
+class: ResourceCarrier(RateActor)
 attributes:
      self.resource_limit = resource_limit
      self.resource_count*   
@@ -61,11 +59,11 @@ methods:
      get_resource_count
      get_resource_limit
 
-class: ResourceFinder
+class: ResourceFinder(RateActor)
 methods:
      get_resource_distance
 
-class: Miner(Animated, RateActor, ResourceCarrier)
+class: Miner(ResourceCarrier, Animated)
 methods:
      next_position
      try_transform_miner
@@ -80,9 +78,9 @@ class: Background(Entity)
 class: Obstacle(CoordEntity)
 methods:
      entity_string
-     
+      
           
-class: Blacksmith(RateActor, ResourceFinder, ResourceCarrier)
+class: Blacksmith(ResourceFinder, ResourceCarrier)
 attributes:
       self.resource_limit = resource_limit
       self.resource_count = 0
@@ -103,7 +101,7 @@ methods:
      entity_string
 
 
-class: Vein(RateActor, Remove, Resource_Finder)
+class: Vein(ResourceFinder, Remove)
 method:     
      schedule_entity
      
@@ -111,17 +109,6 @@ method:
      create_vein_action
 
      entity_string
-
-
-class: MinerFull(Miner)
-attributes:
-      self.resource_count = resource_limit
-methods:     
-     schedule_entity*
-     
-     miner_to_smith
-     create_miner_action
-     try_transform_miner_full
 
      
 class: MinerNotFull(Miner)
@@ -135,6 +122,17 @@ methods:
      try_transform_miner_not_full
 
      entity_string
+
+
+class: MinerFull(Miner)
+attributes:
+      self.resource_count = resource_limit
+methods:     
+     schedule_entity*
+     
+     miner_to_smith
+     create_miner_action
+     try_transform_miner_full
 
 
 class: OreBlob(RateActor, Animated)
