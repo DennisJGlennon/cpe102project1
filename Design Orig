@@ -7,7 +7,7 @@ methods:
      next_image
      entity_string
 class: MinerNotFull
-methods:
+methods: 
      get_name
      set_position
      get_position

@@ -27,7 +27,6 @@ methods:
      next_position
      miner_to_ore
      create_miner_action
-     action
      try_transform_miner_not_full
      try_transform_miner
      schedule_entity
@@ -59,7 +58,6 @@ methods:
      try_transform_miner_full
      try_transform_miner
      create_animation_action
-     action
      schedule_action
      schedule_animation
 class: Vein
